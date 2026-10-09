@@ -2,6 +2,30 @@
     <div class="container">
         <section class="hero" aria-labelledby="titulo-principal">
             <span class="badge">Projeto educacional</span>
+
+
+            <?php if (isset($_SESSION['aluno_id'])): ?>
+
+                <p>
+                    Olá,
+                    <?= htmlspecialchars(
+                        $_SESSION['aluno_nome'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>!
+                </p>
+
+                <p>Que bom ter você de volta ao Numéria!</p>
+
+            <?php else: ?>
+
+                <p>
+                    Entre na sua conta ou cadastre-se pelo menu superior
+                    para começar sua aventura matemática!
+                </p>
+
+            <?php endif; ?>
+
             <h2 id="titulo-principal">Bem-vindo ao Numéria</h2>
             <p>
                 Uma plataforma de aprendizagem de matemática voltada para alunos do Ensino Fundamental II,
@@ -11,15 +35,28 @@
 
         <section id="jogos" aria-labelledby="jogos-titulo" style="margin-top: 32px;">
             <h2 id="jogos-titulo">Jogos disponíveis</h2>
+
             <div class="grid">
                 <article class="card" aria-label="Batalha na Floresta">
                     <h3>Batalha na Floresta</h3>
                     <p>Desafios de adição e subtração em modo individual ou dupla.</p>
+
+                    <?php if (isset($_SESSION['aluno_id'])): ?>
+                        <a href="?pagina=batalha">Jogar</a>
+                    <?php else: ?>
+                        <a href="?pagina=login">Entrar para jogar</a>
+                    <?php endif; ?>
                 </article>
 
                 <article class="card" aria-label="Poções Mágicas">
                     <h3>Poções Mágicas</h3>
                     <p>Aprendizado de frações com desafios de identificação e comparação.</p>
+
+                    <?php if (isset($_SESSION['aluno_id'])): ?>
+                        <a href="?pagina=pocoes">Jogar</a>
+                    <?php else: ?>
+                        <a href="?pagina=login">Entrar para jogar</a>
+                    <?php endif; ?>
                 </article>
             </div>
         </section>

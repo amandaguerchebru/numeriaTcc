@@ -12,6 +12,7 @@ function asset(string $path): string
 
 function app_url(string $path = ''): string
 {
-    $base = '/';
-    return $base . ltrim($path, '/');
+    $base = '/numeriaTcc/public';
+
+    return $base . ($path !== '' ? '/' . ltrim($path, '/') : '');
 }
