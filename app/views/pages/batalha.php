@@ -29,10 +29,10 @@
                 <p>Jogue com outra pessoa no mesmo computador.</p>
             </article>
 
-            <a href="?pagina=desafio" class="btn">
+            <a href="?pagina=desafio&novo=1" class="btn">
                 Jogar Desafio
             </a>
-            
+
         </div>
 
         <p>
