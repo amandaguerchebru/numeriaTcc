@@ -13,20 +13,19 @@
     <header>
         <div class="container brand">
             <h1><?php echo APP_NAME; ?></h1>
-            <nav aria-label="Navegação principal">
-                <a href="<?= htmlspecialchars(app_url('?pagina=home')) ?>">Início</a>
-                <a href="<?= htmlspecialchars(app_url('?pagina=home#jogos')) ?>">Jogos</a>
-                <a href="<?= htmlspecialchars(app_url('?pagina=home#sobre')) ?>">Sobre</a>
+
+            <nav aria-label="Navegação principal" class="nav-principal">
+                <a href="?pagina=home">Início</a>
+                <a href="?pagina=home#jogos">Jogos</a>
+                <a href="?pagina=home#sobre">Sobre</a>
 
                 <?php if (isset($_SESSION['aluno_id'])): ?>
-
-                    <a href="?pagina=sair">Sair da conta</a>
-
+                    <a href="?pagina=sair" class="nav-conta">Sair da conta</a>
                 <?php else: ?>
-
-                    <a href="?pagina=login">Entrar</a>
-                    <a href="?pagina=cadastro">Criar conta</a>
-
+                    <a href="?pagina=login" class="nav-conta">Entrar</a>
+                    <a href="?pagina=cadastro" class="nav-conta nav-cadastro">
+                        Criar conta
+                    </a>
                 <?php endif; ?>
             </nav>
         </div>

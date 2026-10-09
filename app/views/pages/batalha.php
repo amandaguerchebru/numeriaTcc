@@ -5,7 +5,6 @@
         <h2>Prepare-se para o desafio!</h2>
 
         <p>
-            Aqui começa sua aventura matemática.
             Resolva operações de adição e subtração
             para avançar pela floresta.
         </p>
@@ -15,24 +14,33 @@
         <div class="grid">
             <article class="card">
                 <h3>Desafio</h3>
-                <p>Resolva questões antes que o tempo termine.</p>
-                <p>Tempo: 3 minutos.</p>
+                <p>Resolva o máximo de questões em 3 minutos.</p>
+                <a href="?pagina=desafio&novo=1" class="btn">
+                    Jogar Desafio
+                </a>
             </article>
 
             <article class="card">
                 <h3>Contra o Guardião</h3>
-                <p>Enfrente o guardião usando seus conhecimentos matemáticos.</p>
+                <p>
+                    Enfrente o guardião em uma batalha de
+                    conhecimentos matemáticos.
+                </p>
+                <a href="?pagina=guardiao" class="btn">
+                    Enfrentar Guardião
+                </a>
             </article>
 
             <article class="card">
                 <h3>Dupla Local</h3>
-                <p>Jogue com outra pessoa no mesmo computador.</p>
+                <p>
+                    Alterne as jogadas com outra pessoa
+                    no mesmo computador.
+                </p>
+                <a href="?pagina=dupla" class="btn">
+                    Jogar em Dupla
+                </a>
             </article>
-
-            <a href="?pagina=desafio&novo=1" class="btn">
-                Jogar Desafio
-            </a>
-
         </div>
 
         <p>

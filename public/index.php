@@ -16,21 +16,39 @@ $paginasPermitidas = [
     'pocoes',
     'desafio',
     'finalizar_desafio',
+    'historico',
+    'guardiao',
+    'dupla'
+
 ];
 
-// VERIFICAR SE A PÁGINA É PERMITIDA
+// VALIDAR A ROTA SOLICITADA
 if (!in_array($pagina, $paginasPermitidas, true)) {
     http_response_code(404);
-    exit('Página não encontrada.');
+    $pagina = 'home';
 }
 
-// PROTEGER ACESSO AOS JOGOS
-if (in_array($pagina, ['batalha', 'pocoes'], true)
-    && !isset($_SESSION['aluno_id'])) {
-
+// PROTEGER ACESSO ÀS PÁGINAS DOS JOGOS
+if (
+    in_array(
+        $pagina,
+        [
+            'batalha',
+            'pocoes',
+            'desafio',
+            'guardiao',
+            'dupla',
+            'historico'
+        ],
+        true
+    )
+    && !isset($_SESSION['aluno_id'])
+) {
     header('Location: ?pagina=login');
     exit;
 }
+
+
 
 // ENCERRAR SESSÃO
 if ($pagina === 'sair') {
