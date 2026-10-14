@@ -18,8 +18,10 @@ $paginasPermitidas = [
     'finalizar_desafio',
     'historico',
     'guardiao',
-    'dupla'
-
+    'dupla',
+    'abandonar_guardiao',
+    'abandonar_dupla',
+    'abandonar_pocoes'
 ];
 
 // VALIDAR A ROTA SOLICITADA
@@ -127,6 +129,141 @@ if ($pagina === 'finalizar_desafio') {
 
     http_response_code(403);
     exit('Não foi possível finalizar esta partida.');
+}
+
+// ABANDONAR CONTRA O GUARDIÃO
+if ($pagina === 'abandonar_guardiao') {
+    if (!empty($_SESSION['aluno_id']) && !empty($_SESSION['guardiao_partida_id'])) {
+        require_once __DIR__ . '/../app/config/conexao.php';
+
+        $idPartida = (int) $_SESSION['guardiao_partida_id'];
+        $idAluno = (int) $_SESSION['aluno_id'];
+
+        $consultaAbandono = $conexao->prepare(
+            "UPDATE partida
+             SET status = 'abandonada',
+                 data_fim = NOW()
+             WHERE id_partida = :partida
+               AND status = 'em_andamento'
+               AND EXISTS (
+                   SELECT 1
+                   FROM partida_participante
+                   WHERE partida_participante.id_partida = partida.id_partida
+                     AND partida_participante.id_aluno = :aluno
+               )"
+        );
+
+        $consultaAbandono->execute([
+            'partida' => $idPartida,
+            'aluno' => $idAluno
+        ]);
+    }
+
+    unset(
+        $_SESSION['guardiao_partida_id'],
+        $_SESSION['guardiao_participante_id'],
+        $_SESSION['guardiao_vidas_jogador'],
+        $_SESSION['guardiao_vidas_guardiao'],
+        $_SESSION['guardiao_questoes'],
+        $_SESSION['guardiao_xp'],
+        $_SESSION['guardiao_acertos'],
+        $_SESSION['guardiao_erros'],
+        $_SESSION['guardiao_dificuldade']
+    );
+
+    header('Location: ?pagina=batalha');
+    exit;
+}
+
+// ABANDONAR DUPLA LOCAL
+if ($pagina === 'abandonar_dupla') {
+    if (!empty($_SESSION['aluno_id']) && !empty($_SESSION['dupla_partida_id'])) {
+        require_once __DIR__ . '/../app/config/conexao.php';
+
+        $idPartida = (int) $_SESSION['dupla_partida_id'];
+        $idAluno = (int) $_SESSION['aluno_id'];
+
+        $consultaAbandono = $conexao->prepare(
+            "UPDATE partida
+             SET status = 'abandonada',
+                 data_fim = NOW()
+             WHERE id_partida = :partida
+               AND status = 'em_andamento'
+               AND EXISTS (
+                   SELECT 1
+                   FROM partida_participante
+                   WHERE partida_participante.id_partida = partida.id_partida
+                     AND partida_participante.id_aluno = :aluno
+               )"
+        );
+
+        $consultaAbandono->execute([
+            'partida' => $idPartida,
+            'aluno' => $idAluno
+        ]);
+    }
+
+    unset(
+        $_SESSION['dupla_partida_id'],
+        $_SESSION['dupla_participante1_id'],
+        $_SESSION['dupla_participante2_id'],
+        $_SESSION['dupla_jogador2_nome'],
+        $_SESSION['dupla_turno_atual'],
+        $_SESSION['dupla_rodada'],
+        $_SESSION['dupla_dificuldade'],
+        $_SESSION['dupla_questao_atual'],
+        $_SESSION['dupla_acertos_p1'],
+        $_SESSION['dupla_erros_p1'],
+        $_SESSION['dupla_xp_p1'],
+        $_SESSION['dupla_acertos_p2'],
+        $_SESSION['dupla_erros_p2'],
+        $_SESSION['dupla_xp_p2']
+    );
+
+    header('Location: ?pagina=batalha');
+    exit;
+}
+
+// ABANDONAR POÇÕES MÁGICAS
+if ($pagina === 'abandonar_pocoes') {
+    if (!empty($_SESSION['aluno_id']) && !empty($_SESSION['pocoes_partida_id'])) {
+        require_once __DIR__ . '/../app/config/conexao.php';
+
+        $idPartida = (int) $_SESSION['pocoes_partida_id'];
+        $idAluno = (int) $_SESSION['aluno_id'];
+
+        $consultaAbandono = $conexao->prepare(
+            "UPDATE partida
+             SET status = 'abandonada',
+                 data_fim = NOW()
+             WHERE id_partida = :partida
+               AND status = 'em_andamento'
+               AND EXISTS (
+                   SELECT 1
+                   FROM partida_participante
+                   WHERE partida_participante.id_partida = partida.id_partida
+                     AND partida_participante.id_aluno = :aluno
+               )"
+        );
+
+        $consultaAbandono->execute([
+            'partida' => $idPartida,
+            'aluno' => $idAluno
+        ]);
+    }
+
+    unset(
+        $_SESSION['pocoes_partida_id'],
+        $_SESSION['pocoes_participante_id'],
+        $_SESSION['pocoes_dificuldade'],
+        $_SESSION['pocoes_questoes'],
+        $_SESSION['pocoes_xp'],
+        $_SESSION['pocoes_acertos'],
+        $_SESSION['pocoes_erros']
+    );
+
+    header('Location: ?pagina=home#jogos');
+    exit;
 }
 
 // PROCESSAR FORMULÁRIOS

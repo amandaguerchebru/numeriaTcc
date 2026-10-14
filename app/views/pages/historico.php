@@ -29,9 +29,6 @@ $consulta = $conexao->prepare(
 $consulta->execute(['aluno' => $idAluno]);
 $partidas = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-
-$partidas = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
 // ==========================================
 // DESEMPENHO DO ALUNO POR CONTEÚDO
 // ==========================================
@@ -229,7 +226,7 @@ if (!empty($participantes)) {
                         <?php
                         // Busca os dados da partida atual.
                         $consultaDetalhes = $conexao->prepare(
-                            'SELECT id_jogo, data_inicio, data_fim
+                            'SELECT id_jogo, id_modo_jogo, data_inicio, data_fim
                              FROM partida
                              WHERE id_partida = :partida
                              LIMIT 1'
@@ -260,6 +257,20 @@ if (!empty($participantes)) {
                         ]);
 
                         $nomeJogo = $consultaJogo->fetchColumn();
+
+                        // Busca o nome do modo de jogo.
+                        $consultaModo = $conexao->prepare(
+                            'SELECT nome
+                             FROM modo_jogo
+                             WHERE id_modo_jogo = :modo
+                             LIMIT 1'
+                        );
+
+                        $consultaModo->execute([
+                            'modo' => (int) $detalhes['id_modo_jogo']
+                        ]);
+
+                        $nomeModo = $consultaModo->fetchColumn();
                         ?>
 
                         <article class="card">
@@ -268,7 +279,7 @@ if (!empty($participantes)) {
                                     $nomeJogo ?: 'Jogo',
                                     ENT_QUOTES,
                                     'UTF-8'
-                                ) ?>
+                                ) ?><?= $nomeModo ? ' — ' . htmlspecialchars($nomeModo, ENT_QUOTES, 'UTF-8') : '' ?>
                             </h3>
 
                             <p>

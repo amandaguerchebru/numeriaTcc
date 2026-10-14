@@ -1,4 +1,3 @@
-
 <?php
 
 require_once __DIR__ . '/../../config/conexao.php';
@@ -16,10 +15,7 @@ $resultado = null;
 // 1. INICIAR UMA NOVA PARTIDA
 // ============================================
 
-if (
-    !isset($_SESSION['guardiao_partida_id']) ||
-    isset($_GET['novo'])
-) {
+if (isset($_GET['novo'])) {
     unset(
         $_SESSION['guardiao_partida_id'],
         $_SESSION['guardiao_participante_id'],
@@ -31,6 +27,43 @@ if (
         $_SESSION['guardiao_erros'],
         $_SESSION['guardiao_dificuldade']
     );
+    header('Location: ?pagina=guardiao');
+    exit;
+}
+
+// Se existe uma partida na sessão, confirma se ainda está em andamento no banco
+if (!empty($_SESSION['guardiao_partida_id'])) {
+    $consultaPartidaValida = $conexao->prepare(
+        "SELECT status
+         FROM partida
+         WHERE id_partida = :partida
+           AND EXISTS (
+               SELECT 1
+               FROM partida_participante
+               WHERE partida_participante.id_partida = partida.id_partida
+                 AND partida_participante.id_aluno = :aluno
+           )
+         LIMIT 1"
+    );
+    $consultaPartidaValida->execute([
+        'partida' => (int) $_SESSION['guardiao_partida_id'],
+        'aluno' => $idAluno
+    ]);
+    $statusAtual = $consultaPartidaValida->fetchColumn();
+
+    if ($statusAtual !== 'em_andamento') {
+        unset(
+            $_SESSION['guardiao_partida_id'],
+            $_SESSION['guardiao_participante_id'],
+            $_SESSION['guardiao_vidas_jogador'],
+            $_SESSION['guardiao_vidas_guardiao'],
+            $_SESSION['guardiao_questoes'],
+            $_SESSION['guardiao_xp'],
+            $_SESSION['guardiao_acertos'],
+            $_SESSION['guardiao_erros'],
+            $_SESSION['guardiao_dificuldade']
+        );
+    }
 }
 
 // Seleção de dificuldade e criação da partida.
@@ -77,9 +110,9 @@ if (
         } else {
             $consultaPartida = $conexao->prepare(
                 "INSERT INTO partida
-                    (id_jogo, id_modo_jogo, tempo_segundos, status)
-                 VALUES
-                    (1, :modo, NULL, 'em_andamento')"
+        (id_jogo, id_modo_jogo, tempo_segundos, status)
+     VALUES
+        (1, :modo, 0, 'em_andamento')"
             );
 
             $consultaPartida->execute([
@@ -443,7 +476,7 @@ if ($partidaAtiva) {
                 Jogar novamente
             </a>
 
-            <a href="?pagina=batalha" class="btn">
+            <a href="?pagina=abandonar_guardiao" class="btn">
                 Voltar aos modos
             </a>
 
@@ -488,6 +521,10 @@ if ($partidaAtiva) {
 
         <?php endif; ?>
 
-        <p><a href="?pagina=batalha">Voltar à Batalha na Floresta</a></p>
+        <?php if ($partidaAtiva && !$fimDeJogo): ?>
+            <p><a href="?pagina=abandonar_guardiao" class="btn btn-secondary">Voltar aos modos (Abandonar batalha)</a></p>
+        <?php else: ?>
+            <p><a href="?pagina=batalha">Voltar à Batalha na Floresta</a></p>
+        <?php endif; ?>
     </section>
 </main>

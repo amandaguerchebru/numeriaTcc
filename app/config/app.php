@@ -7,7 +7,7 @@ const APP_VERSION = '0.1.0';
 
 function asset(string $path): string
 {
-    return '/' . ltrim($path, '/');
+    return app_url($path);
 }
 
 function app_url(string $path = ''): string
