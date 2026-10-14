@@ -409,36 +409,55 @@ if ($tempoRestante > 0) {
              ÁREA FINAL DO DESAFIO
              ====================================== -->
 
-        <div
+        <article
             id="areaFim"
-            <?= $tempoRestante > 0 ? 'hidden' : '' ?>>
+            class="card resultado-card"
+            <?= $tempoRestante > 0 ? 'hidden' : '' ?>
+            style="margin-top: 24px;">
 
-            <h3>Tempo esgotado!</h3>
+            <h3>⏱️ Desafio Encerrado!</h3>
+            <p>O tempo de 3 minutos terminou. Veja seu desempenho nesta aventura contra o relógio:</p>
 
-            <p>
-                Você conseguiu
-                <strong>
-                    <?= (int) $_SESSION['desafio_acertos'] ?>
-                </strong>
-                acertos e
-                <strong>
-                    <?= (int) $_SESSION['desafio_erros'] ?>
-                </strong>
-                erros.
-            </p>
+            <?php
+            $acertosDesafio = (int) ($_SESSION['desafio_acertos'] ?? 0);
+            $errosDesafio = (int) ($_SESSION['desafio_erros'] ?? 0);
+            $totalRespondidasDesafio = $acertosDesafio + $errosDesafio;
+            $xpDesafio = (int) ($_SESSION['desafio_xp'] ?? 0);
+            ?>
 
-            <p>
-                XP conquistado:
-                <strong>
-                    <?= (int) $_SESSION['desafio_xp'] ?>
-                </strong>
-            </p>
+            <div class="grid" style="margin: 20px 0;">
+                <article class="card">
+                    <h4>Questões Respondidas</h4>
+                    <p class="destaque-numero" id="fimTotalQuestoes"><?= $totalRespondidasDesafio ?></p>
+                </article>
 
-            <a href="?pagina=batalha" class="btn">
-                Voltar à Batalha
-            </a>
+                <article class="card">
+                    <h4>Acertos</h4>
+                    <p class="destaque-numero" style="color: var(--cor-acerto) !important;" id="fimAcertos">✅ <?= $acertosDesafio ?></p>
+                </article>
 
-        </div>
+                <article class="card">
+                    <h4>Erros</h4>
+                    <p class="destaque-numero" style="color: var(--cor-erro) !important;" id="fimErros">❌ <?= $errosDesafio ?></p>
+                </article>
+
+                <article class="card">
+                    <h4>XP Conquistado</h4>
+                    <p class="destaque-numero" style="color: var(--cor-ouro-escuro) !important;" id="fimXP">⭐ <?= $xpDesafio ?> XP</p>
+                </article>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <a href="?pagina=desafio&novo=1" class="btn">
+                    Jogar novamente
+                </a>
+
+                <a href="?pagina=batalha" class="btn btn-secondary">
+                    Voltar aos modos
+                </a>
+            </div>
+
+        </article>
 
 
         <!-- ======================================

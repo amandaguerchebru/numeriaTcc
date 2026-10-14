@@ -164,11 +164,7 @@ if ($partidaAtiva) {
     $vidasGuardiao = (int) $_SESSION['guardiao_vidas_guardiao'];
     $totalQuestoes = (int) $_SESSION['guardiao_questoes'];
 
-    $fimDeJogo = (
-        $vidasJogador <= 0 ||
-        $vidasGuardiao <= 0 ||
-        $totalQuestoes >= 10
-    );
+    $fimDeJogo = ($totalQuestoes >= 10);
 
     // ========================================
     // 3. PROCESSAR RESPOSTA
@@ -262,17 +258,33 @@ if ($partidaAtiva) {
 
                         $xpGanho = (int) $consultaXP->fetchColumn();
 
-                        $_SESSION['guardiao_vidas_guardiao']--;
+                        // O Guardião perde 1 vida (mínimo 0)
+                        if ($_SESSION['guardiao_vidas_guardiao'] > 0) {
+                            $_SESSION['guardiao_vidas_guardiao']--;
+                        }
+                        // Bônus de recuperação: jogador recupera 1 vida (máximo 3)
+                        if ($_SESSION['guardiao_vidas_jogador'] < 3) {
+                            $_SESSION['guardiao_vidas_jogador']++;
+                        }
+
                         $_SESSION['guardiao_acertos']++;
                         $_SESSION['guardiao_xp'] += $xpGanho;
 
-                        $mensagem = 'Resposta correta! O Guardião perdeu uma vida. Você ganhou '
+                        $mensagem = 'Resposta correta! O Guardião foi atingido e você ganhou '
                             . $xpGanho . ' XP!';
                     } else {
-                        $_SESSION['guardiao_vidas_jogador']--;
+                        // O jogador perde 1 vida (mínimo 0)
+                        if ($_SESSION['guardiao_vidas_jogador'] > 0) {
+                            $_SESSION['guardiao_vidas_jogador']--;
+                        }
+                        // O Guardião recupera fôlego (máximo 3)
+                        if ($_SESSION['guardiao_vidas_guardiao'] < 3) {
+                            $_SESSION['guardiao_vidas_guardiao']++;
+                        }
+
                         $_SESSION['guardiao_erros']++;
 
-                        $mensagem = 'Resposta incorreta! Você perdeu uma vida.';
+                        $mensagem = 'Resposta incorreta! O Guardião atacou, mas a floresta mágica protege sua jornada. Continue firme!';
                     }
 
                     $_SESSION['guardiao_questoes']++;
@@ -321,11 +333,7 @@ if ($partidaAtiva) {
         $vidasGuardiao = (int) $_SESSION['guardiao_vidas_guardiao'];
         $totalQuestoes = (int) $_SESSION['guardiao_questoes'];
 
-        $fimDeJogo = (
-            $vidasJogador <= 0 ||
-            $vidasGuardiao <= 0 ||
-            $totalQuestoes >= 10
-        );
+        $fimDeJogo = ($totalQuestoes >= 10);
 
         if ($fimDeJogo) {
             $consultaFim = $conexao->prepare(
@@ -347,11 +355,7 @@ if ($partidaAtiva) {
     $vidasGuardiao = (int) $_SESSION['guardiao_vidas_guardiao'];
     $totalQuestoes = (int) $_SESSION['guardiao_questoes'];
 
-    $fimDeJogo = (
-        $vidasJogador <= 0 ||
-        $vidasGuardiao <= 0 ||
-        $totalQuestoes >= 10
-    );
+    $fimDeJogo = ($totalQuestoes >= 10);
 
     // Busca a próxima questão sem repetir as já respondidas nesta partida.
     $questao = null;
@@ -411,12 +415,15 @@ if ($partidaAtiva) {
     }
 
     if ($fimDeJogo) {
-        if ($vidasGuardiao <= 0) {
-            $resultado = 'Você venceu o Guardião!';
-        } elseif ($vidasJogador <= 0) {
-            $resultado = 'O Guardião venceu desta vez.';
+        $acertos = (int) $_SESSION['guardiao_acertos'];
+        $erros = (int) $_SESSION['guardiao_erros'];
+
+        if ($acertos > $erros) {
+            $resultado = '🏆 Vitória! Você superou os desafios do Guardião da Floresta!';
+        } elseif ($erros > $acertos) {
+            $resultado = '🛡️ Fim da batalha! O Guardião resistiu desta vez, mas você completou os 10 desafios!';
         } else {
-            $resultado = 'Fim da batalha!';
+            $resultado = '🤝 Empate heróico! Você e o Guardião mostraram grande equilíbrio matemático!';
         }
     }
 }
@@ -482,10 +489,18 @@ if ($partidaAtiva) {
 
         <?php else: ?>
 
-            <p>Vidas do jogador: <strong><?= $vidasJogador ?></strong> / 3</p>
-            <p>Vidas do Guardião: <strong><?= $vidasGuardiao ?></strong> / 3</p>
-            <p>Questões respondidas: <strong><?= $totalQuestoes ?></strong> / 10</p>
-            <p>XP: <strong><?= (int) $_SESSION['guardiao_xp'] ?></strong></p>
+            <div class="painel-status" style="margin-bottom: 20px;">
+                <p>
+                    Vidas do Jogador: <strong><?= str_repeat('❤️ ', max(0, $vidasJogador)) ?: '💔 Sem escudos' ?></strong> (<?= $vidasJogador ?>/3) |
+                    Vidas do Guardião: <strong><?= str_repeat('🟣 ', max(0, $vidasGuardiao)) ?: '💥 Atordoado' ?></strong> (<?= $vidasGuardiao ?>/3)
+                </p>
+                <p>
+                    Desafio: <strong><?= min(10, $totalQuestoes + 1) ?></strong> de 10 |
+                    Acertos: <strong><?= (int) $_SESSION['guardiao_acertos'] ?></strong> |
+                    XP: <strong><?= (int) $_SESSION['guardiao_xp'] ?> XP</strong>
+                </p>
+                <progress value="<?= $totalQuestoes ?>" max="10" style="width: 100%;" aria-label="Progresso da batalha"></progress>
+            </div>
 
             <?php if ($questao): ?>
                 <article class="card">
